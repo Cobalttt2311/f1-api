@@ -5,10 +5,11 @@ from models.analytics import (
     HighDNFCircuitItem, DeepGridWinItem, LapsLedItem,
     FastestSpeedItem, AllTimeWinnerItem, TeammateQualiBattleItem,
     DriverRollingFormItem, CumulativePointsItem, ConstructorOneTwoItem,
-    YoungestWinnerItem, CircuitMasterItem
+    YoungestWinnerItem, CircuitMasterItem,
+    LastSyncMetadataItem
 )
 from utils.responses.base_response import BaseResponse
-from typing import List
+from typing import List, Optional
 
 router = APIRouter(prefix="/analytics", tags=["Strategy & Performance Analytics"])
 
@@ -84,3 +85,8 @@ def get_youngest_winners(limit: int = Query(10), service: AnalyticsService = Dep
 def get_circuit_masters(limit: int = Query(15), service: AnalyticsService = Depends(get_service)):
     """4.15 Drivers with most wins at specific circuits."""
     return service.get_circuit_masters(limit)
+
+@router.get("/last-sync", response_model=BaseResponse[Optional[LastSyncMetadataItem]])
+def get_last_sync(service: AnalyticsService = Depends(get_service)):
+    """Get latest database ETL synchronization timestamp and status."""
+    return service.get_last_sync_metadata()

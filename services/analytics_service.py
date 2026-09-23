@@ -1,5 +1,7 @@
 from repositories.analytics_repository import AnalyticsRepository
+from datetime import datetime, timezone, timedelta
 from models.analytics import (
+    LastSyncMetadataItem,
     BiggestMoverItem, PitStopEfficiencyItem, PoleToWinItem,
     HighDNFCircuitItem, DeepGridWinItem, LapsLedItem,
     FastestSpeedItem, AllTimeWinnerItem, TeammateQualiBattleItem,
@@ -8,7 +10,7 @@ from models.analytics import (
 )
 from utils.messages.success_message import SuccessMessage
 from utils.responses.base_response import BaseResponse
-from typing import List
+from typing import List, Optional, Dict, Any
 
 class AnalyticsService:
     def __init__(self):
@@ -83,3 +85,31 @@ class AnalyticsService:
         rows = self.repo.get_circuit_masters(limit)
         data = [CircuitMasterItem(**r) for r in rows]
         return BaseResponse.ok(data=data, message=SuccessMessage.CIRCUIT_MASTERS_RETRIEVED)
+
+    def get_last_sync_metadata(self) -> BaseResponse[Optional[LastSyncMetadataItem]]:
+        row = self.repo.get_last_sync_metadata()
+        if not row:
+            return BaseResponse.ok(data=None, message="No ETL metadata found.")
+        
+        last_dt = row.get("last_synced_at")
+        utc_str = None
+        wib_str = None
+        if last_dt:
+            if isinstance(last_dt, datetime):
+                if last_dt.tzinfo is None:
+                    last_dt = last_dt.replace(tzinfo=timezone.utc)
+                utc_str = last_dt.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+                wib_dt = last_dt.astimezone(timezone(timedelta(hours=7)))
+                wib_str = wib_dt.strftime("%Y-%m-%d %H:%M:%S WIB")
+            else:
+                utc_str = str(last_dt)
+                wib_str = str(last_dt)
+
+        item = LastSyncMetadataItem(
+            id=row.get("id"),
+            last_synced_at_utc=utc_str,
+            last_synced_at_wib=wib_str,
+            status=row.get("status"),
+            total_tables_synced=row.get("total_tables_synced")
+        )
+        return BaseResponse.ok(data=item, message="Last sync metadata retrieved.")

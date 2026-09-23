@@ -1,5 +1,5 @@
 from core.database import get_db_cursor
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 class AnalyticsRepository:
     def get_biggest_movers(self, year: int, limit: int = 10) -> List[Dict[str, Any]]:
@@ -307,3 +307,17 @@ class AnalyticsRepository:
                 LIMIT %s;
             """, (limit,))
             return cur.fetchall()
+
+    def get_last_sync_metadata(self) -> Optional[Dict[str, Any]]:
+        with get_db_cursor() as cur:
+            cur.execute("""
+                SELECT 
+                    id,
+                    last_synced_at,
+                    status,
+                    total_tables_synced
+                FROM public.etl_metadata
+                ORDER BY last_synced_at DESC
+                LIMIT 1;
+            """)
+            return cur.fetchone()

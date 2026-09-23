@@ -106,3 +106,11 @@ class CircuitMasterItem(BaseModel):
     total_wins_at_circuit: int
     circuit_wiki_url: Optional[str] = None
     driver_wiki_url: Optional[str] = None
+
+
+class LastSyncMetadataItem(BaseModel):
+    id: Optional[int] = None
+    last_synced_at_utc: Optional[str] = None
+    last_synced_at_wib: Optional[str] = None
+    status: Optional[str] = None
+    total_tables_synced: Optional[int] = None

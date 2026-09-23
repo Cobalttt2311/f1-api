@@ -899,6 +899,24 @@
             },
             "description": "Drivers with most wins at specific circuits."
           }
+        },
+        {
+          "name": "4.16 Database Last Sync Metadata",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/last-sync",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "analytics",
+                "last-sync"
+              ]
+            },
+            "description": "Get latest database ETL synchronization timestamp and status from PostgreSQL etl_metadata table."
+          }
         }
       ]
     }
