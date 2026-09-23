@@ -7,6 +7,7 @@ from models.races import (
 from utils.messages.error_message import ErrorMessage
 from utils.messages.success_message import SuccessMessage
 from utils.responses.base_response import BaseResponse
+from helpers.date_helper import DateHelper
 from fastapi import HTTPException
 from typing import List
 
@@ -18,21 +19,27 @@ class RacesService:
         rows = self.repo.get_race_calendar(year)
         if not rows:
             raise HTTPException(status_code=404, detail=ErrorMessage.RACE_NOT_FOUND)
-        data = [RaceCalendarItem(**r) for r in rows]
+        
+        # Enrich raw UTC times with localized WIB times using DateHelper
+        data = [RaceCalendarItem(**DateHelper.enrich_race_calendar_item(r)) for r in rows]
         return BaseResponse.ok(data=data, message=SuccessMessage.CALENDAR_RETRIEVED)
 
     def get_practice_schedule(self, year: int, round_no: int) -> BaseResponse[PracticeScheduleItem]:
         row = self.repo.get_practice_schedule(year, round_no)
         if not row:
             raise HTTPException(status_code=404, detail=ErrorMessage.RACE_NOT_FOUND)
-        data = PracticeScheduleItem(**row)
+        
+        # Enrich raw UTC practice times with localized WIB times using DateHelper
+        data = PracticeScheduleItem(**DateHelper.enrich_practice_schedule_item(row))
         return BaseResponse.ok(data=data, message=SuccessMessage.PRACTICE_SCHEDULE_RETRIEVED)
 
     def get_sprint_schedule(self, year: int) -> BaseResponse[List[SprintScheduleItem]]:
         rows = self.repo.get_sprint_schedule(year)
         if not rows:
             raise HTTPException(status_code=404, detail=f"No sprint races found for season {year}.")
-        data = [SprintScheduleItem(**r) for r in rows]
+        
+        # Enrich raw UTC sprint times with localized WIB times using DateHelper
+        data = [SprintScheduleItem(**DateHelper.enrich_sprint_schedule_item(r)) for r in rows]
         return BaseResponse.ok(data=data, message=SuccessMessage.SPRINT_SCHEDULE_RETRIEVED)
 
     def get_race_results(self, year: int, round_no: int) -> BaseResponse[List[RaceResultItem]]:

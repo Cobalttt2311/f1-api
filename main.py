@@ -63,3 +63,4 @@ app.include_router(constructors_router, prefix=settings.API_V1_PREFIX)
 app.include_router(races_router, prefix=settings.API_V1_PREFIX)
 app.include_router(standings_router, prefix=settings.API_V1_PREFIX)
 app.include_router(analytics_router, prefix=settings.API_V1_PREFIX)
+    

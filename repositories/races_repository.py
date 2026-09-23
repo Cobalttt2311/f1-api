@@ -7,70 +7,29 @@ class RacesRepository:
             cur.execute("""
                 SELECT 
                     r."raceId",
+                    r."year",
                     r."round",
                     r."name" AS grand_prix_name,
-                    r."circuitId",
+                    c."circuitId",
                     c."name" AS circuit_name,
                     c."location",
                     c."country",
-                    CASE 
-                        WHEN r."sprint_date" IS NOT NULL AND r."sprint_date" != '' AND r."sprint_date" NOT LIKE '%%N%%' 
-                        THEN true 
-                        ELSE false 
-                    END AS has_sprint,
-                    -- Main Race
+                    (r."sprint_date" IS NOT NULL AND r."sprint_date" != '' AND r."sprint_date" NOT LIKE '%%N%%') AS has_sprint,
+                    -- Main Race (UTC)
                     r."date" AS race_date,
                     r."time" AS race_time_utc,
-                    CASE 
-                        WHEN r."time" IS NOT NULL AND r."time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."date" || ' ' || SUBSTRING(r."time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS race_time_wib,
-                    CASE 
-                        WHEN r."time" IS NOT NULL AND r."time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."date" || ' ' || SUBSTRING(r."time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'YYYY-MM-DD HH24:MI:SS')
-                        ELSE NULL 
-                    END AS race_datetime_wib,
-                    -- Free Practice 1
+                    -- Free Practices (UTC)
                     r."fp1_date",
                     r."fp1_time" AS fp1_time_utc,
-                    CASE 
-                        WHEN r."fp1_time" IS NOT NULL AND r."fp1_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."fp1_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."fp1_date" || ' ' || SUBSTRING(r."fp1_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS fp1_time_wib,
-                    -- Free Practice 2 / Sprint Shootout
                     r."fp2_date",
                     r."fp2_time" AS fp2_time_utc,
-                    CASE 
-                        WHEN r."fp2_time" IS NOT NULL AND r."fp2_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."fp2_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."fp2_date" || ' ' || SUBSTRING(r."fp2_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS fp2_time_wib,
-                    -- Free Practice 3
                     r."fp3_date",
                     r."fp3_time" AS fp3_time_utc,
-                    CASE 
-                        WHEN r."fp3_time" IS NOT NULL AND r."fp3_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."fp3_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."fp3_date" || ' ' || SUBSTRING(r."fp3_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS fp3_time_wib,
-                    -- Qualifying
+                    -- Qualifying & Sprint (UTC)
                     r."quali_date",
                     r."quali_time" AS quali_time_utc,
-                    CASE 
-                        WHEN r."quali_time" IS NOT NULL AND r."quali_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."quali_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."quali_date" || ' ' || SUBSTRING(r."quali_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS quali_time_wib,
-                    -- Sprint
                     r."sprint_date",
                     r."sprint_time" AS sprint_time_utc,
-                    CASE 
-                        WHEN r."sprint_date" IS NOT NULL AND r."sprint_date" != '' AND r."sprint_date" NOT LIKE '%%N%%' AND r."sprint_time" IS NOT NULL AND r."sprint_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."sprint_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."sprint_date" || ' ' || SUBSTRING(r."sprint_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS sprint_time_wib,
                     r."url" AS race_wiki_url,
                     c."url" AS circuit_wiki_url
                 FROM public.races r
@@ -90,30 +49,13 @@ class RacesRepository:
                     r."name" AS grand_prix_name,
                     c."name" AS circuit_name,
                     c."country",
-                    -- Free Practice 1
+                    -- Free Practices (UTC)
                     r."fp1_date",
                     r."fp1_time" AS fp1_time_utc,
-                    CASE 
-                        WHEN r."fp1_time" IS NOT NULL AND r."fp1_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."fp1_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."fp1_date" || ' ' || SUBSTRING(r."fp1_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS fp1_time_wib,
-                    -- Free Practice 2 (or Sprint Shootout)
                     r."fp2_date",
                     r."fp2_time" AS fp2_time_utc,
-                    CASE 
-                        WHEN r."fp2_time" IS NOT NULL AND r."fp2_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."fp2_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."fp2_date" || ' ' || SUBSTRING(r."fp2_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS fp2_time_wib,
-                    -- Free Practice 3 (NULL if Sprint weekend)
                     r."fp3_date",
                     r."fp3_time" AS fp3_time_utc,
-                    CASE 
-                        WHEN r."fp3_time" IS NOT NULL AND r."fp3_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."fp3_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."fp3_date" || ' ' || SUBSTRING(r."fp3_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS fp3_time_wib,
                     r."url" AS race_wiki_url
                 FROM public.races r
                 JOIN public.circuits c ON r."circuitId" = c."circuitId"
@@ -131,25 +73,12 @@ class RacesRepository:
                     r."name" AS grand_prix_name,
                     c."name" AS circuit_name,
                     c."country",
+                    -- Sprint (UTC)
                     r."sprint_date",
                     r."sprint_time" AS sprint_time_utc,
-                    CASE 
-                        WHEN r."sprint_time" IS NOT NULL AND r."sprint_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."sprint_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."sprint_date" || ' ' || SUBSTRING(r."sprint_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS sprint_time_wib,
-                    CASE 
-                        WHEN r."sprint_time" IS NOT NULL AND r."sprint_time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."sprint_date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."sprint_date" || ' ' || SUBSTRING(r."sprint_time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'YYYY-MM-DD HH24:MI:SS')
-                        ELSE NULL 
-                    END AS sprint_datetime_wib,
+                    -- Main Race (UTC)
                     r."date" AS main_race_date,
                     r."time" AS main_race_time_utc,
-                    CASE 
-                        WHEN r."time" IS NOT NULL AND r."time" ~ '^[0-9]{2}:[0-9]{2}:[0-9]{2}' AND r."date" ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
-                            TO_CHAR((r."date" || ' ' || SUBSTRING(r."time" FROM 1 FOR 8))::TIMESTAMP + INTERVAL '7 hours', 'HH24:MI:SS')
-                        ELSE NULL 
-                    END AS main_race_time_wib,
                     r."url" AS race_wiki_url
                 FROM public.races r
                 JOIN public.circuits c ON r."circuitId" = c."circuitId"
