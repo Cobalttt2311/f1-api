@@ -195,6 +195,7 @@ class RacesRepository:
                 SELECT 
                     CASE 
                         WHEN r."grid" = 0 THEN 'PL' 
+                        WHEN r."grid" IS NULL THEN '-'
                         ELSE CAST(r."grid" AS TEXT) 
                     END AS starting_grid_position,
                     d."number" AS car_number,

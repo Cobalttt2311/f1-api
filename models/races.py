@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any
 
 class RaceCalendarItem(BaseModel):
     raceId: int
@@ -67,23 +67,23 @@ class SprintScheduleItem(BaseModel):
     race_wiki_url: Optional[str] = None
 
 class RaceResultItem(BaseModel):
-    finish_position: str
+    finish_position: Optional[str] = None
     car_number: Optional[float] = None
     driver_code: Optional[str] = None
     driver_name: str
     team_name: str
-    starting_grid: int
-    laps_completed: int
+    starting_grid: Optional[int] = None
+    laps_completed: Optional[int] = 0
     race_time_or_gap: Optional[str] = None
-    points_awarded: float
-    status: str
+    points_awarded: Optional[float] = 0.0
+    status: Optional[str] = "Finished"
     fastest_lap_time: Optional[str] = None
     fastest_lap_rank: Optional[float] = None
     driver_wiki_url: Optional[str] = None
     constructor_wiki_url: Optional[str] = None
 
 class QualifyingResultItem(BaseModel):
-    qualifying_position: int
+    qualifying_position: Optional[int] = None
     car_number: Optional[float] = None
     driver_code: Optional[str] = None
     driver_name: str
@@ -95,22 +95,22 @@ class QualifyingResultItem(BaseModel):
     constructor_wiki_url: Optional[str] = None
 
 class SprintResultItem(BaseModel):
-    finish_position: str
+    finish_position: Optional[str] = None
     car_number: Optional[float] = None
     driver_code: Optional[str] = None
     driver_name: str
     team_name: str
-    starting_grid: int
-    laps_completed: int
+    starting_grid: Optional[int] = None
+    laps_completed: Optional[int] = 0
     time_or_gap: Optional[str] = None
-    points_awarded: float
-    status: str
+    points_awarded: Optional[float] = 0.0
+    status: Optional[str] = "Finished"
     driver_wiki_url: Optional[str] = None
     constructor_wiki_url: Optional[str] = None
 
 class PitStopItem(BaseModel):
-    stop_number: int
-    lap: int
+    stop_number: Optional[int] = None
+    lap: Optional[int] = None
     time_of_day_utc: Optional[str] = None
     driver_code: Optional[str] = None
     driver_name: str
@@ -121,14 +121,14 @@ class PitStopItem(BaseModel):
     constructor_wiki_url: Optional[str] = None
 
 class StartingGridDriver(BaseModel):
-    starting_grid_position: str
+    starting_grid_position: Optional[str] = "-"
     car_number: Optional[float] = None
     driver_code: Optional[str] = None
     driver_name: str
     team_name: str
     qualifying_position: Optional[int] = None
     qualifying_best_lap: Optional[str] = None
-    grid_status: str
+    grid_status: Optional[str] = "As Qualified"
     driver_wiki_url: Optional[str] = None
     constructor_wiki_url: Optional[str] = None
     race_wiki_url: Optional[str] = None
