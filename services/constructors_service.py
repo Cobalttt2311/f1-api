@@ -1,14 +1,13 @@
+from repositories.interfaces.Iconstructors_repository import IConstructorsRepository
 from repositories.constructors_repository import ConstructorsRepository
+from services.interfaces.Iconstructors_service import IConstructorsService
 from models.constructors import ConstructorItem
-from utils.messages.success_message import SuccessMessage
-from utils.responses.base_response import BaseResponse
-from typing import List
+from typing import List, Optional
 
-class ConstructorsService:
-    def __init__(self):
-        self.repo = ConstructorsRepository()
+class ConstructorsService(IConstructorsService):
+    def __init__(self, repo: Optional[IConstructorsRepository] = None):
+        self.repo = repo or ConstructorsRepository()
 
-    def get_all_constructors(self) -> BaseResponse[List[ConstructorItem]]:
+    def get_all_constructors(self) -> List[ConstructorItem]:
         rows = self.repo.get_all_constructors()
-        data = [ConstructorItem(**r) for r in rows]
-        return BaseResponse.ok(data=data, message=SuccessMessage.CONSTRUCTORS_RETRIEVED)
+        return [ConstructorItem(**r) for r in rows]

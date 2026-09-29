@@ -1,7 +1,8 @@
+from repositories.interfaces.Iseasons_repository import ISeasonsRepository
 from core.database import get_db_cursor
 from typing import List, Dict, Any
 
-class SeasonsRepository:
+class SeasonsRepository(ISeasonsRepository):
     def get_all_seasons(self) -> List[Dict[str, Any]]:
         with get_db_cursor() as cur:
             cur.execute("""

@@ -1,7 +1,8 @@
+from repositories.interfaces.Iconstructors_repository import IConstructorsRepository
 from core.database import get_db_cursor
 from typing import List, Dict, Any
 
-class ConstructorsRepository:
+class ConstructorsRepository(IConstructorsRepository):
     def get_all_constructors(self) -> List[Dict[str, Any]]:
         with get_db_cursor() as cur:
             cur.execute("""

@@ -1,7 +1,8 @@
+from repositories.interfaces.Ianalytics_repository import IAnalyticsRepository
 from core.database import get_db_cursor
 from typing import List, Dict, Any, Optional
 
-class AnalyticsRepository:
+class AnalyticsRepository(IAnalyticsRepository):
     def get_biggest_movers(self, year: int, limit: int = 10) -> List[Dict[str, Any]]:
         with get_db_cursor() as cur:
             cur.execute("""

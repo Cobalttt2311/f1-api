@@ -1,7 +1,8 @@
+from repositories.interfaces.Iraces_repository import IRacesRepository
 from core.database import get_db_cursor
 from typing import List, Dict, Any, Optional
 
-class RacesRepository:
+class RacesRepository(IRacesRepository):
     def get_race_calendar(self, year: int) -> List[Dict[str, Any]]:
         with get_db_cursor() as cur:
             cur.execute("""

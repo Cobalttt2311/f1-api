@@ -1,7 +1,8 @@
+from repositories.interfaces.Istandings_repository import IStandingsRepository
 from core.database import get_db_cursor
 from typing import List, Dict, Any
 
-class StandingsRepository:
+class StandingsRepository(IStandingsRepository):
 
     def get_latest_driver_standings(self) -> List[Dict[str, Any]]:
         query = """

@@ -1,23 +1,21 @@
+from repositories.interfaces.Idrivers_repository import IDriversRepository
 from repositories.drivers_repository import DriversRepository
+from services.interfaces.Idrivers_service import IDriversService
 from models.drivers import DriverItem, DriverProfile
 from utils.messages.error_message import ErrorMessage
-from utils.messages.success_message import SuccessMessage
-from utils.responses.base_response import BaseResponse
 from fastapi import HTTPException
-from typing import List
+from typing import List, Optional
 
-class DriversService:
-    def __init__(self):
-        self.repo = DriversRepository()
+class DriversService(IDriversService):
+    def __init__(self, repo: Optional[IDriversRepository] = None):
+        self.repo = repo or DriversRepository()
 
-    def get_all_drivers(self) -> BaseResponse[List[DriverItem]]:
+    def get_all_drivers(self) -> List[DriverItem]:
         rows = self.repo.get_all_drivers()
-        data = [DriverItem(**r) for r in rows]
-        return BaseResponse.ok(data=data, message=SuccessMessage.DRIVERS_RETRIEVED)
+        return [DriverItem(**r) for r in rows]
 
-    def get_driver_profile(self, driver_id: int) -> BaseResponse[DriverProfile]:
+    def get_driver_profile(self, driver_id: int) -> DriverProfile:
         row = self.repo.get_driver_profile(driver_id)
         if not row:
             raise HTTPException(status_code=404, detail=ErrorMessage.DRIVER_NOT_FOUND)
-        data = DriverProfile(**row)
-        return BaseResponse.ok(data=data, message=SuccessMessage.DRIVER_PROFILE_RETRIEVED)
+        return DriverProfile(**row)

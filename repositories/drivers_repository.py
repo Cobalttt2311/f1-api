@@ -1,7 +1,8 @@
+from repositories.interfaces.Idrivers_repository import IDriversRepository
 from core.database import get_db_cursor
 from typing import List, Dict, Any, Optional
 
-class DriversRepository:
+class DriversRepository(IDriversRepository):
     def get_all_drivers(self) -> List[Dict[str, Any]]:
         with get_db_cursor() as cur:
             cur.execute("""
