@@ -4,10 +4,11 @@ An enterprise-grade, high-performance RESTful API built with **FastAPI** providi
 
 ---
 
-## 📌 Data Source & ETL Pipeline
+## 📌 Data Source & Ecosystem
 
-The relational database powering this API is extracted, transformed, and loaded using the dedicated **F1 Race Data ETL Pipeline**:
+The relational database powering this API is extracted, transformed, and loaded using the dedicated **F1 Race Data ETL Pipeline**, and consumed by the **Tifosi** web application:
 
+🔗 **Live Web Dashboard**: [Tifosi - Telemetry & Information for Formula One Statistics & Insights](https://f1-view-nine.vercel.app/dashboard)  
 🔗 **ETL Pipeline Repository**: [https://github.com/Cobalttt2311/f1-race-data](https://github.com/Cobalttt2311/f1-race-data)
 
 > **Note**: Before running this API, ensure that your PostgreSQL database has been initialized and populated by running the ETL pipeline from the repository above.
@@ -215,4 +216,5 @@ A pre-configured Postman Collection is included in the root directory:
 
 **Made by Cobalt**
 
+* Web App & Live Dashboard: [Tifosi - Telemetry & Information for Formula One Statistics & Insights](https://f1-view-nine.vercel.app/dashboard)
 * Data Pipeline & Ingestion: [f1-race-data ETL](https://github.com/Cobalttt2311/f1-race-data)
