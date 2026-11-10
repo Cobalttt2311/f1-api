@@ -1,4 +1,4 @@
-﻿# 🏎️ Formula 1 REST API (`f1-api`)
+# 🏎️ Formula 1 REST API (`f1-api`)
 
 An enterprise-grade, high-performance RESTful API built with **FastAPI** providing comprehensive Formula 1 historical data, season standings, race weekend telemetry, starting grids, lap progressions, and strategic performance analytics from 1950 to modern seasons.
 
