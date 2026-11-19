@@ -200,7 +200,9 @@ class AnalyticsRepository(IAnalyticsRepository):
                         rc."year",
                         rc."round",
                         rc."name" AS grand_prix,
+                        d."code" AS driver_code,
                         d."forename" || ' ' || d."surname" AS driver_name,
+                        c."name" AS team_name,
                         r."points",
                         AVG(r."points") OVER (
                             PARTITION BY r."driverId" 
@@ -210,6 +212,7 @@ class AnalyticsRepository(IAnalyticsRepository):
                     FROM public.results r
                     JOIN public.races rc ON r."raceId" = rc."raceId"
                     JOIN public.drivers d ON r."driverId" = d."driverId"
+                    LEFT JOIN public.constructors c ON r."constructorId" = c."constructorId"
                     WHERE rc."year" = %s
                 )
                 SELECT * FROM driver_races 
@@ -223,7 +226,9 @@ class AnalyticsRepository(IAnalyticsRepository):
                 SELECT 
                     rc."round",
                     rc."name" AS grand_prix,
+                    d."code" AS driver_code,
                     d."forename" || ' ' || d."surname" AS driver_name,
+                    c."name" AS team_name,
                     r."points" AS race_points,
                     SUM(r."points") OVER (
                         PARTITION BY r."driverId" 
@@ -232,6 +237,7 @@ class AnalyticsRepository(IAnalyticsRepository):
                 FROM public.results r
                 JOIN public.races rc ON r."raceId" = rc."raceId"
                 JOIN public.drivers d ON r."driverId" = d."driverId"
+                LEFT JOIN public.constructors c ON r."constructorId" = c."constructorId"
                 WHERE rc."year" = %s
                 ORDER BY rc."round" ASC, cumulative_season_points DESC;
             """, (year,))

@@ -1,4 +1,4 @@
-﻿# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -86,3 +86,6 @@ desktop.ini
 *.sqlite
 *.sqlite3
 *.db
+
+# Local Asset Scraper Scripts
+scripts/
