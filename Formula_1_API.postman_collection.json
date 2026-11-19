@@ -243,7 +243,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/drivers/1/profile",
+              "raw": "{{baseUrl}}/drivers/1/profile?year=2026",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -251,9 +251,16 @@
                 "drivers",
                 "1",
                 "profile"
+              ],
+              "query": [
+                {
+                  "key": "year",
+                  "value": "2026",
+                  "description": "Optional season year for seasonal summary (season_year, season_position, season_points, season_team). Omit or uncheck for career-only stats."
+                }
               ]
             },
-            "description": "Career statistics and summary (e.g. 1 = Lewis Hamilton, 830 = Max Verstappen)."
+            "description": "Returns focused career statistics (total_races_entered, total_career_points, total_career_wins, total_career_podiums, total_career_poles, total_fastest_laps, total_dnfs, world_championships, highest_grid, seasons_active, teams_driven_for) and optional seasonal summary (season_year, season_position, season_points, season_team) when `year` is provided. Example driver_id: 1 = Lewis Hamilton, 830 = Max Verstappen."
           }
         }
       ]

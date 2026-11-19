@@ -23,3 +23,14 @@ class DriverProfile(BaseModel):
     total_career_wins: int
     total_career_podiums: int
     total_career_points: float
+    total_career_poles: int = 0
+    total_fastest_laps: int = 0
+    total_dnfs: int = 0
+    world_championships: int = 0
+    highest_grid: Optional[int] = None
+    seasons_active: Optional[str] = None
+    teams_driven_for: Optional[str] = None
+    season_year: Optional[int] = None
+    season_position: Optional[int] = None
+    season_points: Optional[float] = None
+    season_team: Optional[str] = None

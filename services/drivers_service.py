@@ -14,8 +14,8 @@ class DriversService(IDriversService):
         rows = self.repo.get_all_drivers()
         return [DriverItem(**r) for r in rows]
 
-    def get_driver_profile(self, driver_id: int) -> DriverProfile:
-        row = self.repo.get_driver_profile(driver_id)
+    def get_driver_profile(self, driver_id: int, year: Optional[int] = None) -> DriverProfile:
+        row = self.repo.get_driver_profile(driver_id, year=year)
         if not row:
             raise HTTPException(status_code=404, detail=ErrorMessage.DRIVER_NOT_FOUND)
         return DriverProfile(**row)
