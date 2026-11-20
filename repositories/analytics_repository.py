@@ -166,22 +166,57 @@ class AnalyticsRepository(IAnalyticsRepository):
     def get_teammate_qualifying(self, year: int) -> List[Dict[str, Any]]:
         with get_db_cursor() as cur:
             cur.execute("""
-                WITH team_quali AS (
-                    SELECT 
-                        rc."year",
-                        q."raceId",
+                WITH driver_counts AS (
+                    SELECT
+                        q."constructorId",
                         c."name" AS team_name,
                         q."driverId",
                         d."forename" || ' ' || d."surname" AS driver_name,
-                        q."position" AS quali_pos,
-                        ROW_NUMBER() OVER (PARTITION BY q."raceId", q."constructorId" ORDER BY q."position" ASC) AS team_rank
+                        COUNT(*) AS sessions_count
                     FROM public.qualifying q
                     JOIN public.races rc ON q."raceId" = rc."raceId"
                     JOIN public.drivers d ON q."driverId" = d."driverId"
                     JOIN public.constructors c ON q."constructorId" = c."constructorId"
                     WHERE rc."year" = %s
+                    GROUP BY q."constructorId", c."name", q."driverId", d."forename", d."surname"
+                ),
+                main_drivers AS (
+                    SELECT
+                        *,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY "constructorId"
+                            ORDER BY sessions_count DESC, driver_name ASC
+                        ) AS driver_slot
+                    FROM driver_counts
+                ),
+                top_two AS (
+                    SELECT * FROM main_drivers WHERE driver_slot <= 2
+                ),
+                shared_races AS (
+                    SELECT
+                        q."raceId",
+                        q."constructorId"
+                    FROM public.qualifying q
+                    JOIN public.races rc ON q."raceId" = rc."raceId"
+                    JOIN top_two t ON q."constructorId" = t."constructorId" AND q."driverId" = t."driverId"
+                    WHERE rc."year" = %s
+                    GROUP BY q."raceId", q."constructorId"
+                    HAVING COUNT(DISTINCT q."driverId") = 2
+                ),
+                team_quali AS (
+                    SELECT
+                        t.team_name,
+                        t.driver_name,
+                        q."raceId",
+                        ROW_NUMBER() OVER (
+                            PARTITION BY q."raceId", q."constructorId"
+                            ORDER BY q."position" ASC
+                        ) AS team_rank
+                    FROM public.qualifying q
+                    JOIN shared_races sr ON q."raceId" = sr."raceId" AND q."constructorId" = sr."constructorId"
+                    JOIN top_two t ON q."constructorId" = t."constructorId" AND q."driverId" = t."driverId"
                 )
-                SELECT 
+                SELECT
                     team_name,
                     driver_name,
                     COUNT(CASE WHEN team_rank = 1 THEN 1 END) AS outqualified_teammate_count,
@@ -189,7 +224,7 @@ class AnalyticsRepository(IAnalyticsRepository):
                 FROM team_quali
                 GROUP BY team_name, driver_name
                 ORDER BY team_name ASC, outqualified_teammate_count DESC;
-            """, (year,))
+            """, (year, year))
             return cur.fetchall()
 
     def get_driver_form(self, year: int) -> List[Dict[str, Any]]:
